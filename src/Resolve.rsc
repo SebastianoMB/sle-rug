@@ -17,18 +17,20 @@ alias UseDef = rel[loc use, loc def];
 
 // the reference graph
 alias RefGraph = tuple[
-  Use uses, 
-  Def defs, 
-  UseDef useDef
+  Use uses, // uses of the program
+  Def defs, // definitions of the program
+  UseDef useDef // relation to link use location and def location
 ]; 
 
-RefGraph resolve(AForm f) = <us, ds, us o ds>
+RefGraph resolve(AForm f) = <us, ds, us o ds> // relational composition connects targets of uses with sources of definitions 
   when Use us := uses(f), Def ds := defs(f);
 
-Use uses(AForm f) {
-  return {}; 
+// Uses of the expression for obtaining expressions source and name in a tuple
+Use uses(AForm f) { 
+  return { <e.src, e.name> | /AExpr e := f.questions, e has name }; 
 }
 
+// Definitions of questions name and source in a tuple
 Def defs(AForm f) {
-  return {}; 
+  return { <q.name, q.src> | /AQuestion q := f.questions, q has name }; 
 }
