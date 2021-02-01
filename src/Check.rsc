@@ -29,9 +29,15 @@ TEnv collect(AForm f) {
 	return tenv;
 }
 
-set[Message] check(AForm f, TEnv tenv, UseDef useDef)
-  = ( {} | it + check(q, tenv, useDef) | /AQuestion q := f )
-  + ( {} | it + check(e, tenv, useDef) | /AExpr e := f);
+set[Message] check(AForm f, TEnv tenv, UseDef useDef) {
+	set[Message] msgs = {};
+	 msgs = ( {} | it + check(q, tenv, useDef) | /AQuestion q := f ) + ( {} | it + check(e, tenv, useDef) | /AExpr e := f);
+	if(msgs == {} ){
+		return {info("No errors/warning found", f.src)};
+	}
+	return msgs;
+}
+
 
 // Checks questions for errors
 set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
@@ -56,7 +62,7 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
 	// warning: duplicated labels
 	msgs += {warning("Duplicate labels \"<q.label>\"", q.src) 
 			 | q has label && size((tenv<2,0>)[q.label]) > 1};
-	
+
 	return msgs;
 }
 

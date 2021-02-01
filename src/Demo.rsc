@@ -26,7 +26,10 @@ UseDef resolveUseDef(str file) = resolve(ASTfromCST(file)).useDef;
 // CHECK	
 set[Message] checkErrors(str file) {
 	AForm ast = ASTfromCST(file);
-	return check(ast, collect(ast), resolve(ast).useDef);
+	TEnv tenv = collect(ast);
+	UseDef useDef = resolve(ast).useDef;
+	
+	return check(ast, tenv, useDef);
 }
 
 // EVAL (for tax)
