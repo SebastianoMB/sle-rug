@@ -133,5 +133,5 @@ str type2js(string()) = "\'\'";
 
 // Since we get an Abstract Expr we have to map the location to a readable string so that it can be used in html and js
 str mapLoc2string(loc src){
-	return "expression_<src.offset>_<src.length>_<src.begin.line>_<src.begin.column>_<src.end.line>_<src.end.column>";
+	return "abstract_expr_<src.offset>_<src.length>_<src.begin.line>_<src.begin.column>_<src.end.line>_<src.end.column>";
 }
