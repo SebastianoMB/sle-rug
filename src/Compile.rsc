@@ -5,6 +5,7 @@ import Resolve;
 import IO;
 import lang::html5::DOM;
 
+
 void compile(AForm f) {
   writeFile(f.src[extension="js"].top, form2js(f));
   writeFile(f.src[extension="html"].top, toString(form2html(f)));
@@ -63,19 +64,6 @@ HTML5Node question2html(AQuestion q) {
   }
 }
 
-
-// Since we get an Abstract Expr we have to map the location to a readable string so that it can be used in html and js
-str mapLoc2string(loc src){
-	str res = "";
-	res = "expr_<src.offset>_<src.length>_<src.begin.line>_<src.begin.column>_<src.end.line>_<src.end.column>";
-	return res;
-}
-
-// converts AST type to html type: string = "text", integer = "number", boolean = "checkbox"
-HTML5Attr type2html(string())  = \type("text");
-HTML5Attr type2html(integer()) = \type("number");
-HTML5Attr type2html(boolean()) = \type("checkbox");
-
 // Translates query language into JavaScript, in this case "VueJs" was used  
 str form2js(AForm f) {
   return "var app = new Vue({
@@ -133,7 +121,17 @@ str expr2js(AExpr e) {
   }
 }
 
+// converts AST type to html type: string = "text", integer = "number", boolean = "checkbox"
+HTML5Attr type2html(string())  = \type("text");
+HTML5Attr type2html(integer()) = \type("number");
+HTML5Attr type2html(boolean()) = \type("checkbox");
+
 // Translates initial AST types from AST to corresponding strings for JavaScript
 str type2js(integer()) = "0";
 str type2js(boolean()) = "false";
 str type2js(string()) = "\'\'";
+
+// Since we get an Abstract Expr we have to map the location to a readable string so that it can be used in html and js
+str mapLoc2string(loc src){
+	return "expression_<src.offset>_<src.length>_<src.begin.line>_<src.begin.column>_<src.end.line>_<src.end.column>";
+}
