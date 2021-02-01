@@ -55,8 +55,7 @@ void compileFile(str file) {
 
 // TRANSFORM - flatten
 void flattenForm(str file) {
-	ast = ASTfromCST(file);
-	flatten(ast);
+
 }
 
 // TRANSFORM - rename

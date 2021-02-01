@@ -7,9 +7,6 @@ import Resolve;
  * Implement big-step semantics for QL
  */
  
-// NB: Eval may assume the form is type- and name-correct.
-
-
 // Semantic domain for expressions (values)
 data Value
   = vint(int n)
@@ -21,7 +18,6 @@ data Value
 // The value environment
 alias VEnv = map[str name, Value \value];
 
-// Modeling user input
 data Input = input(str question, Value \value);
 
 Value ATypeToVal(integer()) = vint(0);
@@ -38,8 +34,6 @@ VEnv initialEnv(AForm f) {
   return venv;
 }
 
-// Because of out-of-order use and declaration of questions
-// we use the solve primitive in Rascal to find the fixpoint of venv.
 VEnv eval(AForm f, Input inp, VEnv venv) {
   return solve (venv) {
     venv = evalOnce(f, inp, venv);
@@ -54,7 +48,6 @@ VEnv evalOnce(AForm f, Input inp, VEnv venv) {
 }
 
 VEnv eval(AQuestion q, Input inp, VEnv venv) {
-  // evaluate conditions for branching,
   switch (q) {
   	case question(str label, str name, AType _):
   		if(name == inp.question) { venv[name] = inp.\value; }
@@ -65,7 +58,6 @@ VEnv eval(AQuestion q, Input inp, VEnv venv) {
   	case blockquestion(list[AQuestion] questions):
   		for(AQuestion q <- questions) { venv = eval(q, inp, venv); }
   		
-  	// evaluate inp and computed questions to return updated VEnv
   	case ifelsequestion(AExpr ae, list[AQuestion] ifquestions, list[AQuestion] elsequestions): {
   		for(AQuestion ifq <- ifquestions, AQuestion elseq <- elsequestions){
 	  		if(eval(ae, venv) == vbool(true) ){
@@ -76,8 +68,7 @@ VEnv eval(AQuestion q, Input inp, VEnv venv) {
 		}
   	}
   	
-  	case ifquestion(AExpr ae, list[AQuestion] ifquestions):
-  	{
+  	case ifquestion(AExpr ae, list[AQuestion] ifquestions): {
 		for(AQuestion ifq <- ifquestions){
 			if(eval(ae, venv) == vbool(true) ){
 				venv = eval(ifq, inp, venv);

@@ -44,7 +44,7 @@ HTML5Node question2html(AQuestion q) {
     case computedquestion(str qlabel, str qname, AType qtype, AExpr e):
       return div(
         label(\for("<qname>"), qlabel),
-        input(name(qname), html5attr("v-model", qname), type2html(qtype), sourceLocationToIdentifier(e.src)),
+        input(name(qname), html5attr("v-model", qname), type2html(qtype), mapLoc2string(e.src)),
         align("center")
       );
       
@@ -52,24 +52,29 @@ HTML5Node question2html(AQuestion q) {
       return div([question2html(q) | q <- questions]);
       
     case ifelsequestion(AExpr e, list[AQuestion] ifquestions, list[AQuestion] elsequestions):
-      return div([html5attr("v-if", sourceLocationToIdentifier(e.src)), 
+      return div([html5attr("v-if", mapLoc2string(e.src)), 
       			question2html(ifq), question2html(elseq) | ifq <- ifquestions, elseq <- elsequestions]);
         
     case ifquestion(AExpr e, list[AQuestion] ifquestions):
-      return div([html5attr("v-if", sourceLocationToIdentifier(e.src)),
+      return div([html5attr("v-if", mapLoc2string(e.src)),
       		    question2html(ifq) | ifq <- ifquestions]);
       
     default: throw "Question: <q> is not supported";
   }
 }
 
+
+// Since we get an Abstract Expr we have to map the location to a readable string so that it can be used in html and js
+str mapLoc2string(loc src){
+	str res = "";
+	res = "expr_<src.offset>_<src.length>_<src.begin.line>_<src.begin.column>_<src.end.line>_<src.end.column>";
+	return res;
+}
+
 // converts AST type to html type: string = "text", integer = "number", boolean = "checkbox"
 HTML5Attr type2html(string())  = \type("text");
 HTML5Attr type2html(integer()) = \type("number");
 HTML5Attr type2html(boolean()) = \type("checkbox");
-
-str sourceLocationToIdentifier(loc source)
-  =  "expr_<source.offset>_<source.length>_<source.begin.line>_<source.begin.column>_<source.end.line>_<source.end.column>";
 
 // Translates query language into JavaScript, in this case "VueJs" was used  
 str form2js(AForm f) {
@@ -92,7 +97,7 @@ str form2js(AForm f) {
          '    <}>
          '    <for (/AQuestion q <- f.questions) {>
          '    <if (q has e && q has ifq) {>
-         '    <sourceLocationToIdentifier(q.ifq.src)>: function() {
+         '    <mapLoc2string(q.ifq.src)>: function() {
          '      return <expr2js(q.e)>;
          '    },
          '    <}>

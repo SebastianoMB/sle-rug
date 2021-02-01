@@ -45,14 +45,14 @@ set[Message] check(AQuestion q, TEnv tenv, UseDef useDef) {
 	msgs += {error("Duplicate question declaration \"<name>\" with different types", q.src) 
 		     | q has name && size((tenv<1,3>)[q.name]) > 1 };
 		     
-	// error: type of computed question does not match type of expression	     
-	msgs += {error("Type of computed question := \"<ATypeToType(q.t)>\" does not match type of expression: \"<typeOf(q.expr, tenv, useDef)>\" ", q.src) // 
-			 | q has expr && ATypeToType(q.t) != typeOf(q.expr, tenv, useDef) };
-			 
-	// error: type of if questions is not boolean
+ 	// error: type of conditions is not boolean
 	msgs += {error("Conditions must be of type boolean, instead is: <typeOf(q.expr, tenv, useDef)>", q.expr.src) 
 			 | q has expr && typeOf(q.expr, tenv, useDef) != tbool()};
 			 
+	// error: type of computed question does not match type of expression	     
+	msgs += {error("Type of computed question := \"<ATypeToType(q.t)>\" does not match type of expression: \"<typeOf(q.expr, tenv, useDef)>\" ", q.src) // 
+			 | q has expr && ATypeToType(q.t) != typeOf(q.expr, tenv, useDef) };
+			  
 	// warning: duplicated labels
 	msgs += {warning("Duplicate labels \"<q.label>\"", q.src) 
 			 | q has label && size((tenv<2,0>)[q.label]) > 1};
